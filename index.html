@@ -729,7 +729,8 @@
 <script>
 // ── SCROLL TO TOP ON LOAD ──
 if('scrollRestoration' in history) history.scrollRestoration='manual';
-window.scrollTo(0,0);
+window.scrollTo({top:0,left:0,behavior:'instant'});
+window.addEventListener('beforeunload', function(){ window.scrollTo(0,0); });
 
 const intro = document.getElementById('intro');
 const lockup = document.getElementById('intro-inner');
