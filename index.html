@@ -735,22 +735,16 @@ const intro = document.getElementById('intro');
 const lockup = document.getElementById('intro-inner');
 const isMobile = window.innerWidth <= 768;
 
-if(isMobile){
-  // Skip intro on mobile to prevent body overflow toggle causing layout jump
-  intro.remove();
+// Only lock body overflow on desktop — on mobile it causes layout jump
+if(!isMobile) document.body.style.overflow = 'hidden';
+setTimeout(() => lockup.classList.add('show'), 200);
+setTimeout(() => {
+  intro.classList.add('fade-out');
+  if(!isMobile) document.body.style.overflow = '';
+  setTimeout(() => intro.remove(), 500);
   document.querySelectorAll('.rc-bar-fill').forEach(b => b.style.width = b.dataset.w + '%');
   countUp(document.getElementById('rc-top'), 1250000, 1500);
-} else {
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => lockup.classList.add('show'), 200);
-  setTimeout(() => {
-    intro.classList.add('fade-out');
-    document.body.style.overflow = '';
-    setTimeout(() => intro.remove(), 500);
-    document.querySelectorAll('.rc-bar-fill').forEach(b => b.style.width = b.dataset.w + '%');
-    countUp(document.getElementById('rc-top'), 1250000, 1500);
-  }, 1900);
-}
+}, 1900);
 
 function countUp(el, target, dur) {
   const start = performance.now();
