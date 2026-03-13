@@ -289,6 +289,86 @@
   .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
   .footer-links a:hover { color: var(--blue); }
   .footer-copy { font-size: 12px; color: var(--muted); width: 100%; padding-top: 20px; border-top: 1px solid var(--subtle); margin-top: 4px; }
+
+  /* ── MOBILE RESPONSIVE ── */
+  @media (max-width: 768px) {
+    /* NAV: hide links, compact brand */
+    .nav-links { display: none; }
+    nav { padding: 8px 14px 8px 16px; width: calc(100% - 24px); }
+    .nav-name { font-size: 14px; }
+    .nav-logo { width: 28px; height: 28px; }
+
+    /* HERO: single column, no fixed widths */
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+      padding: 100px 20px 40px;
+      gap: 32px;
+      overflow: hidden;
+    }
+    .hero-h1 { font-size: clamp(34px, 9vw, 48px); }
+    .hero-sub { font-size: 15px; }
+    .hero-btns { flex-direction: column; gap: 10px; }
+    .hero-btns a { text-align: center; }
+    .hero-stats { gap: 10px; }
+    .hero-stat-pill { padding: 8px 14px; font-size: 12px; }
+    .hero-stat-pill strong { font-size: 17px; }
+
+    /* RESULTS CARD (in hero) */
+    .results-card { padding: 22px 20px; }
+    .rc-amount { font-size: 34px; }
+
+    /* TICKER */
+    .ticker-wrap { overflow: hidden; }
+
+    /* BRAND STRIP */
+    .brand-strip { gap: 24px; padding: 28px 20px; flex-wrap: wrap; justify-content: center; }
+    .brand-strip-divider { display: none; }
+    .brand-strip-stat .num { font-size: 28px; }
+    .brand-strip-stat .lbl { font-size: 11px; }
+
+    /* SECTIONS */
+    section { padding: 60px 20px; }
+    .section-h2 { font-size: clamp(28px, 7vw, 38px); }
+    .section-sub { margin-bottom: 32px; }
+
+    /* AREAS GRID */
+    .areas-grid { grid-template-columns: 1fr; gap: 12px; }
+
+    /* RESULTS GRID */
+    .results-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .result-card .amount { font-size: 20px; }
+    .result-card { padding: 18px 16px; }
+
+    /* PROMISE: single column */
+    .promise-grid { grid-template-columns: 1fr; gap: 32px; }
+    .promise-visual { padding: 28px 24px; }
+    .pv-tagline { font-size: 26px; }
+
+    /* TEAM */
+    .team-grid { grid-template-columns: 1fr; gap: 14px; }
+    .team-card.featured { grid-column: span 1; grid-template-columns: 1fr; gap: 20px; }
+    .team-card.featured .team-avatar { height: 120px; border-radius: 14px; font-size: 36px; }
+
+    /* CTA */
+    .cta-wrap { padding: 60px 20px; }
+    .cta-phone { font-size: 28px; }
+    .cta-btns { flex-direction: column; align-items: center; }
+
+    /* FOOTER */
+    footer { flex-direction: column; align-items: flex-start; gap: 14px; padding: 28px 20px; }
+    .footer-links { gap: 14px; }
+    .footer-copy { font-size: 11px; line-height: 1.6; }
+
+    /* KILL LAYOUT-SHIFTING ANIMATIONS ON MOBILE */
+    .area-card,
+    .result-card,
+    .team-card,
+    .promise-item {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -647,17 +727,30 @@
 </footer>
 
 <script>
+// ── SCROLL TO TOP ON LOAD ──
+if('scrollRestoration' in history) history.scrollRestoration='manual';
+window.scrollTo(0,0);
+
 const intro = document.getElementById('intro');
 const lockup = document.getElementById('intro-inner');
-document.body.style.overflow = 'hidden';
-setTimeout(() => lockup.classList.add('show'), 200);
-setTimeout(() => {
-  intro.classList.add('fade-out');
-  document.body.style.overflow = '';
-  setTimeout(() => intro.remove(), 500);
+const isMobile = window.innerWidth <= 768;
+
+if(isMobile){
+  // Skip intro on mobile to prevent body overflow toggle causing layout jump
+  intro.remove();
   document.querySelectorAll('.rc-bar-fill').forEach(b => b.style.width = b.dataset.w + '%');
   countUp(document.getElementById('rc-top'), 1250000, 1500);
-}, 1900);
+} else {
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => lockup.classList.add('show'), 200);
+  setTimeout(() => {
+    intro.classList.add('fade-out');
+    document.body.style.overflow = '';
+    setTimeout(() => intro.remove(), 500);
+    document.querySelectorAll('.rc-bar-fill').forEach(b => b.style.width = b.dataset.w + '%');
+    countUp(document.getElementById('rc-top'), 1250000, 1500);
+  }, 1900);
+}
 
 function countUp(el, target, dur) {
   const start = performance.now();
@@ -678,12 +771,14 @@ const obs = new IntersectionObserver(entries => {
   });
 }, { threshold: 0.1 });
 
-document.querySelectorAll('.area-card, .result-card, .team-card, .promise-item').forEach((el, i) => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(18px)';
-  el.style.transition = `opacity 0.45s ease ${i * 0.06}s, transform 0.45s ease ${i * 0.06}s, border-color 0.25s, box-shadow 0.25s`;
-  obs.observe(el);
-});
+if(!isMobile){
+  document.querySelectorAll('.area-card, .result-card, .team-card, .promise-item').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(18px)';
+    el.style.transition = `opacity 0.45s ease ${i * 0.06}s, transform 0.45s ease ${i * 0.06}s, border-color 0.25s, box-shadow 0.25s`;
+    obs.observe(el);
+  });
+}
 </script>
 </body>
 </html>
